@@ -10,3 +10,5 @@ sentence-transformers
 pypdf
 langchain_community
 langchain_chroma
+unstructured
+unstructured[pdf]
