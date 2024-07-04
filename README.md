@@ -50,9 +50,12 @@ I update the vector at runtime with my resume.First code will create vector db o
 
 and then update the vector db  with resume and respond according to my resume.
 
-I also try different inout question it respond accurately.
+I also try different input question it respond accurately.
 
 In this tasks I use zephyr 7b beta for inference.
+
+## Important Note  
+Export the Hugging face token or put in **create_embedding.py** line 74 to hassle free execution.
 
 ### Thanks for your time.
 

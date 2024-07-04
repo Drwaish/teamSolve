@@ -22,16 +22,15 @@ class Embeddings:
 
     """
     def __init__(self):
-        logger.info("Call Embedding Constructor Call ")
+        logger.info("Call Embedding Constructor ")
         self.repo_name = "HuggingFaceH4/zephyr-7b-beta"
         self.embedding_model = "sentence-transformers/all-MiniLM-L6-v2"
-        self.embeddings = HuggingFaceEmbeddings(self.embedding_model,model_kwargs={'device': 'cuda'})
-        self.document = self.load_document()
+        # self.embeddings = HuggingFaceEmbeddings(self.embedding_model,model_kwargs={'device': 'cuda'})
+        # self.document = self.load_document()
         self.llm = self.llm_initialization()
-        self.retriever = self.store_vectordb()
-        self.text_splitter=RecursiveCharacterTextSplitter(separator='\n',
-                                    chunk_size=100,
-                                    chunk_overlap=20)
+        # self.retriever = self.store_vectordb("RaGQADoc.pdf")
+        self.text_splitter=RecursiveCharacterTextSplitter(chunk_size=100,
+                                                          chunk_overlap=20)
     
     def load_document(self, file_name:str = None):
         """
@@ -50,7 +49,7 @@ class Embeddings:
             logger.info("Load Document")
             return documents
         except Exception as e:
-            logger.info(""+e)
+            logger.error(" "+str(e))
 
     def llm_initialization(self):
         """
@@ -77,7 +76,7 @@ class Embeddings:
             logger.info("LLM initialized")
             return llm
         except Exception as e:
-            logger.info(""+e)
+            logger.error(" "+str(e))
     def update_db(self, file_path : str = None):
         """
         Update the vector store.
@@ -93,13 +92,18 @@ class Embeddings:
         """
         try:
             docs = self.load_document(file_name=file_path)
+            if docs is None:
+              print("Error: No docs")
             text_chunks=self.text_splitter.split_documents(docs)
-            vectordb = Chroma(persist_directory="chroma_db", embedding_function=self.embeddings)
+            embeddings = HuggingFaceEmbeddings(model_name = self.embedding_model,model_kwargs={'device': 'cuda'})
+
+            vectordb = Chroma(persist_directory="chroma_db", embedding_function=embeddings)
             vectordb.add_documents(text_chunks)
-            self.retriever = vectordb.as_retriever()
+            retriever = vectordb.as_retriever()
             logger.info("Vector DB Updated")
+            return retriever
         except Exception as e:
-            logger.info(""+e)
+            logger.error(" "+str(e))
 
     def store_vectordb(self, file_path_name):
         """
@@ -115,10 +119,13 @@ class Embeddings:
         """
         try:
             docs = self.load_document(file_name=file_path_name)
+            if docs is None:
+              print("Error: No Docs")
+            embeddings = HuggingFaceEmbeddings(model_name = self.embedding_model, model_kwargs={'device': 'cuda'})
             text_chunks=self.text_splitter.split_documents(docs)
-            vectorstore = Chroma.from_documents(documents=text_chunks, embedding=self.embeddings, persist_directory = './chroma_db')
+            vectorstore = Chroma.from_documents(documents=text_chunks, embedding=embeddings, persist_directory = './chroma_db')
             retriever = vectorstore.as_retriever()
             logger.info("Create Vector DB")
             return retriever
         except Exception as e:
-            logger.info(""+e)
+            logger.error(" "+str(e))
