@@ -80,13 +80,7 @@ class Query:
             Prompt to execute for inference.
 
         """
-        # template = """Generate a SQL query using the following table name: {Table}, and columns as a list: {Columns}, to answer the following question:
-        # {query}.
-        # Output Query:
-
-        # """
         try:
-
             messages = [
                     {
                         "role": "system",
@@ -126,7 +120,6 @@ class Query:
 
         # """
         try:
-
             messages = [
                     {
                         "role": "system",
@@ -153,19 +146,10 @@ class Query:
 
         """
         try:   
-            outputs = self.pipe(prompt, max_new_tokens=512)
+            outputs = self.pipe(prompt)
             if outputs:
                 logger.info("Response Created")
                 return outputs[0]['generated_text'].split('<|assistant|>')
         except Exception as e:
            logger.info("Error in output creation "+ e)
 
-if __name__=="__main__":
-    transaction = ["EmployeeID", "FirstName,", "LastName" ,"Age" ,"Department", "Position","Salary","HireDate","ManagerID"]
-    transaction1 = ["EmployeeID", "InsuranceFirm", "InsuranceClaim"]
-    tables = ["transaction", "transaction1"]
-    query = "Tell me FirstName of the employe with highest InsuranceClaim"
-    qu =  Query()
-    # prompt = qu.create_prompt(table=table, cols= transaction, query=query)
-    prompt = qu.create_prompt_multiple_table(table=tables,  cols= [transaction, transaction1], query=query)
-    print(qu.query_generator(prompt=prompt))

@@ -6,3 +6,9 @@ langchain
 torch
 bitsandbytes
 langchain_community
+"unstructured[pdf]"
+sentence-transformers
+faiss-gpu
+pypdf
+langchain_community
+langchain_chroma
